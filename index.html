@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre Procesamiento de Texto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eaeaea;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #d1d1d1;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+            text-align: center;
+        }
+        textarea, select {
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #aaa;
+            border-radius: 5px;
+            background-color: #ffffff;
+        }
+        button {
+            background-color: #555;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #333;
+        }
+        .response {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Procesamiento de Texto</h1>
+    <div class="container">
+        <select id="methodSelect">
+            <option value="procesar-texto">Procesar Texto</option>
+            <option value="detectar-idioma">Detectar Idioma</option>
+            <option value="corregir-texto">Corregir Texto</option>
+            <option value="tokenizar-con-stopwords">Tokenizar con Stopwords</option>
+            <option value="tokenizar-sin-stopwords">Tokenizar sin Stopwords</option>
+        </select>
+        <textarea id="textInput" placeholder="Escribe tu texto aquí..."></textarea>
+        <button onclick="procesarTexto()">Enviar</button>
+        <div class="response" id="responseContainer"></div>
+    </div>
+
+    <script>
+        function procesarTexto() {
+            const texto = document.getElementById("textInput").value.trim();
+            const metodo = document.getElementById("methodSelect").value;
+            
+            if (!texto) {
+                alert("Por favor, ingrese un texto antes de procesarlo.");
+                return;
+            }
+            
+            fetch(`http://127.0.0.1:5000/${metodo}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ texto })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let htmlContent = "<h3>Resultado:</h3>";
+                for (const key in data) {
+                    htmlContent += `<p><strong>${key.replace(/_/g, " ")}:</strong> ${Array.isArray(data[key]) ? data[key].join(", ") : data[key]}</p>`;
+                }
+                document.getElementById("responseContainer").innerHTML = htmlContent;
+            })
+            .catch(error => {
+                document.getElementById("responseContainer").innerHTML = `<p style="color: red;">Error al procesar el texto. Intenta nuevamente.</p>`;
+                console.error("Error:", error);
+            });
+        }
+    </script>
+</body>
+</html>
