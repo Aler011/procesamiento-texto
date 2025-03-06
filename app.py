@@ -68,7 +68,7 @@ def correct_text(text, dictionary):
     return " ".join([correct_word(word.lower(), dictionary) for word in words])
 
 def spell_correct(language, text):
-    dictionary_file = "Spanish-1000-common.txt" if language == "es" else "English-1000-common.txt"
+    dictionary_file = "most-common-spanish-words.txt" if language == "es" else "most-common-english-words.txt"
     dictionary = load_dictionary(dictionary_file)
     return correct_text(text, dictionary)
 
